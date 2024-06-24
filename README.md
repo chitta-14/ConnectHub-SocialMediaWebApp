@@ -1,4 +1,5 @@
 🚀 ConnectHub - Social Media Web App
+------------------------------------
 ConnectHub is a robust social media web application that I developed using Spring Boot, MySQL, and Postman. It serves as a comprehensive platform for users to connect, share, and engage with their friends and communities, much like Facebook.
 
 Key Features:
