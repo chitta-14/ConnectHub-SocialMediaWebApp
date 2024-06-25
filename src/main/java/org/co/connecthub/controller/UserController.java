@@ -42,5 +42,11 @@ public class UserController {
     public ResponseEntity<ApiResponse>deleteUser(@PathVariable Integer userId){
         return new ResponseEntity<ApiResponse>(this.userService.deleteUser(userId),HttpStatus.OK);
     }
+    //register api
+    //@PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/register")
+    public ResponseEntity<UserDto>reqisterUser(@RequestBody UserDto userDto){
+        return new ResponseEntity<UserDto>(this.userService.registerUser(userDto), HttpStatus.CREATED);
+    }
 
 }

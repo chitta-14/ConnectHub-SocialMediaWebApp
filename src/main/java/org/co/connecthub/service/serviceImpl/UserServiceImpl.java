@@ -1,14 +1,18 @@
 package org.co.connecthub.service.serviceImpl;
 
+import org.co.connecthub.entity.Role;
 import org.co.connecthub.entity.User;
 import org.co.connecthub.exception.ResourceNotFoundException;
 import org.co.connecthub.payload.ApiResponse;
+import org.co.connecthub.payload.AppConstants;
 import org.co.connecthub.payload.UserDto;
+import org.co.connecthub.repository.RoleRepository;
 import org.co.connecthub.repository.UserRepository;
 import org.co.connecthub.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,10 +25,17 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        User createdUser=this.userRepository.save(this.modelMapper.map(userDto, User.class));
+        User user=this.modelMapper.map(userDto,User.class);
+        Role role=this.roleRepository.findById(AppConstants.NORMAL_USER).get();
+        user.getRoles().add(role);
+        User createdUser=this.userRepository.save(user);
         return this.modelMapper.map(createdUser,UserDto.class);
     }
 
@@ -61,5 +72,15 @@ public class UserServiceImpl implements UserService {
         apiResponse.setMessage("User deleted sucessfully...");
         apiResponse.setResult(true);
         return apiResponse;
+    }
+
+    @Override
+    public UserDto registerUser(UserDto userDto) {
+        User user=this.modelMapper.map(userDto,User.class);
+        user.setPassword(this.passwordEncoder.encode(userDto.getPassword()));
+        Role role=this.roleRepository.findById(AppConstants.ADMIN_USER).get();
+        user.getRoles().add(role);
+        User newUser=this.userRepository.save(user);
+        return this.modelMapper.map(newUser,UserDto.class);
     }
 }
